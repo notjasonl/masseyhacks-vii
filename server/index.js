@@ -41,7 +41,7 @@ app.post("/api/mapClick", (req, res) => {
     features: violationsintracts
   }
 
-  res.json({meters: masterMeters, violations: masterViolations})
+  res.json({meters: masterMeters.features.length, violations: masterViolations.features.length})
 })
 
 app.get("/api", (req, res) => {
@@ -53,3 +53,5 @@ app.listen(PORT, () => {
 });
 
 //curl --data "lat=38.907192&long=-77.036873" -X POST "http://localhost:4001/api/mapClick"
+
+//make a buffer around chosen coord
