@@ -91,12 +91,20 @@ axios.get(march_violations_url).then((res) => {
         }
     })
     fs.writeFileSync(path.join(output_path, "may_violations.geojson"), JSON.stringify(may))
-    fs.writeFileSync(path.join(output_path, "master_violations.geojson"), JSON.stringify(master))
     fs.writeFileSync(path.join(output_path, "meter_violations.geojson"), JSON.stringify(meters))
     return axios.get(tracts_income_url)
 }).then((res) => {
     tracts = res.data
-    fs.writeFileSync(path.join(output_path, "tracts_income.geojson"), JSON.stringify(res.data))
+    tracts.features.forEach(tract => {
+        let count = 0
+        master.features.forEach(violation => {
+            if (turf.booleanContains(turf.polygon(tract.geometry.coordinates), turf.point(violation.geometry.coordinates))) {
+                count += 1
+            }
+        })
+        tract.properties["VIOLATIONS"] = count
+    })
+    fs.writeFileSync(path.join(output_path, "tracts_income.geojson"), JSON.stringify(tracts))
     return axios.get(meter_url)
 }).then((res) => {
     let match = {}
@@ -113,6 +121,8 @@ axios.get(march_violations_url).then((res) => {
         }
     })
     fs.writeFileSync(path.join(output_path, "parking_meters.geojson"), JSON.stringify(res.data))
+
+    fs.writeFileSync(path.join(output_path, "master_violations.geojson"), JSON.stringify(master))
 })
 
 
