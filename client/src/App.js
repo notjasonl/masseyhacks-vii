@@ -10,11 +10,14 @@ import {
   theme,
 } from '@chakra-ui/react';
 
+import AirportSelector from './components/AirportSelector'
+import DateSelector from './components/DateSelector'
+
 function App() {
   return (
     <ChakraProvider theme={theme}>
       <Box textAlign="center" fontSize="xl">
-        <Grid minH="100vh" p={3}>
+        <Grid minH="100vh">
           
         </Grid>
       </Box>
