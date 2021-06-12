@@ -2,6 +2,7 @@ const axios = require("axios")
 const fs = require("fs-extra")
 const path = require("path")
 const turf = require("@turf/turf")
+const lodash = require("lodash")
 
 const meter_url = "https://opendata.arcgis.com/datasets/53b94fc3cfd94506a7eb82d9796fbbc1_76.geojson"
 const march_violations_url = "https://opendata.arcgis.com/datasets/be2e2b7f6c5f4d4aae67549dd58beb09_2.geojson"
@@ -122,8 +123,28 @@ axios.get(march_violations_url).then((res) => {
     })
     fs.writeFileSync(path.join(output_path, "parking_meters.geojson"), JSON.stringify(res.data))
 
-    fs.writeFileSync(path.join(output_path, "master_violations.geojson"), JSON.stringify(master))
+    let new_master = {
+        type: "FeatureCollection",
+        features: []
+    }
+    var mapped = {}
+
+    console.log(`[i] Creating hashes for master`)
+
+    master.features.forEach(violation => {
+        var key = `${violation.geometry.coordinates}`
+        violation.properties["DUP_KEY"] = key
+        mapped[key] = (mapped[key] || 0) + 1
+    })
+
+    console.log(`[i] Removing dupes based on hashes`)
+
+    master.features.forEach(violation => {
+        if (Object.keys(mapped).includes(violation.properties["DUP_KEY"])) {
+            violation.properties["COUNT"] = mapped[violation.properties["DUP_KEY"]]
+            new_master.features.push(violation)
+            delete mapped[violation.properties["DUP_KEY"]]
+        }
+    })
+    fs.writeFileSync(path.join(output_path, "master_violations.geojson"), JSON.stringify(new_master))
 })
-
-
-//DP03_0062E
