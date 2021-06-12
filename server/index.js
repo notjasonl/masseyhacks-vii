@@ -20,15 +20,15 @@ app.post("/api/mapClick", (req, res) => {
   })
 
   let meters = JSON.parse(fs.readFileSync(path.join(__dirname, "../data/data/parking_meters.geojson"), "utf8"));
-  let matches = meters.features.filter(meter => {meter.properties["TRACT"] == tract[0].properties["NAME"]})
-  res.json({name: tract[0]})
-  let metersintracts=[]
-  for (meter in meters){
-    if (meter.properties["TRACT"] == tract[0].properties["NAME"]){
-      metersintracts.push(meter)
-    }
-  }
+  // res.json({name: tract[0]})
+  let metersintracts=meters.features.filter(meter => {return meter.properties["TRACT"] == tract[0].properties["NAME"]})
+  // meters.features.forEach(meter => {
+  //   if (meter.properties["TRACT"] == tract[0].properties["NAME"]){
+  //     metersintracts.push(meter)
+  //   }
+  // })
   
+  res.json(metersintracts)
 
 })
 
