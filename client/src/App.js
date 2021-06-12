@@ -9,7 +9,6 @@ import {
   Grid,
   theme,
 } from '@chakra-ui/react';
-import { Logo } from './Logo';
 
 function App() {
   return (
