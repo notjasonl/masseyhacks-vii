@@ -1,13 +1,13 @@
 const axios = require("axios")
 const fs = require("fs-extra")
 const path = require("path")
-const turf = require("turf")
+const turf = require("@turf/turf")
 
 const meter_url = "https://opendata.arcgis.com/datasets/53b94fc3cfd94506a7eb82d9796fbbc1_76.geojson"
 const march_violations_url = "https://opendata.arcgis.com/datasets/be2e2b7f6c5f4d4aae67549dd58beb09_2.geojson"
 const april_violations_url = "https://opendata.arcgis.com/datasets/3d39532ac4a244d99912ac9b4440c11b_3.geojson"
 const may_violations_url = "https://opendata.arcgis.com/datasets/856ceda37614463d9e404e3a97db7c13_4.geojson"
-const tracts_income_url = "https://maps2.dcgis.dc.gov/dcgis/rest/services/DCGIS_DATA/Demographic_WebMercator/MapServer/41/query?where=1%3D1&outFields=OBJECTID,STATEFP,COUNTYFP,TRACTCE,GEOID,NAME,NAMELSAD,DP03_0062E,SHAPE,SHAPE.AREA,SHAPE.LEN,GIS_ID,INTPTLON,INTPTLAT,AWATER,ALAND,FUNCSTAT,MTFCC&outSR=4326&f=json"
+const tracts_income_url = "https://opendata.arcgis.com/datasets/a53c0f02804a484b87027ce3ef3ff38b_41.geojson"
 
 let master = {
     type: "FeatureCollection",
@@ -19,14 +19,16 @@ let meters = {
     features: []
 }
 
+let tracts = {
+    type: "FeatureCollection",
+    features: []
+}
+
 const output_path = path.join(__dirname, "../data")
 
 fs.ensureDirSync(output_path)
-
-axios.get(meter_url).then((res) => {
-    fs.writeFileSync(path.join(output_path, "parking_meters.geojson"), JSON.stringify(res.data))
-    return axios.get(march_violations_url)
-}).then((res) => {
+    
+axios.get(march_violations_url).then((res) => {
     let march = {
         type: "FeatureCollection",
         features: []
@@ -93,5 +95,25 @@ axios.get(meter_url).then((res) => {
     fs.writeFileSync(path.join(output_path, "meter_violations.geojson"), JSON.stringify(meters))
     return axios.get(tracts_income_url)
 }).then((res) => {
+    tracts = res.data
     fs.writeFileSync(path.join(output_path, "tracts_income.geojson"), JSON.stringify(res.data))
+    return axios.get(meter_url)
+}).then((res) => {
+    let match = {}
+    res.data.features.forEach(meter => {
+        var meter_point = turf.point(meter.geometry.coordinates)
+        tracts.features.forEach(tract => {
+            let polygon = turf.polygon(tract.geometry.coordinates)
+            if (turf.booleanContains(polygon, meter_point)) {
+                meter.properties["TRACT"] = tract.properties["NAME"]
+            }
+        })
+        if (!meter.properties["TRACT"]) {
+            meter.properties["TRACT"] = -1
+        }
+    })
+    fs.writeFileSync(path.join(output_path, "parking_meters.geojson"), JSON.stringify(res.data))
 })
+
+
+//DP03_0062E
