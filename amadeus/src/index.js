@@ -77,6 +77,46 @@ app.post("/times", async function (req, res) {
 
 })
 
+app.post("/delays", async function (req, res) {
+    let locDep = req.query.locationDeparture
+    let locArr = req.query.locationArrival
+    let departure = req.query.departure
+    let departureTime = req.query.departureTime
+    let arrival = req.query.arrival
+    let arrivalTime = req.query.arrivalTime
+    let airCode = req.query.aircraftCode
+    let carrCode = req.query.carrierCode
+    let number = req.query.flightNumber
+    let duration = req.query.duration
+
+    const predictions = await amadeus.travel.predictions.flightDelay.get({
+        originLocationCode: locDep,
+        destinationLocationCode: locArr,
+        departureDate: departure,
+        departureTime: departureTime,
+        arrivalDate: arrival,
+        arrivalTime: arrivalTime,
+        aircraftCode: airCode,
+        carrierCode: carrCode,
+        flightNumber: number,
+        duration: duration
+    })
+
+    let maxPrediction = {}
+
+    predictions.data.forEach(possible => {
+        if (parseFloat(possible.probability) > parseFloat(maxPrediction.probability)) {
+            maxPrediction = possible
+        }
+    })
+
+    try {
+        res.json(maxPrediction)
+    } catch (err) {
+        await res.json(err)
+    }
+})
+
 
 var server = app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`)
