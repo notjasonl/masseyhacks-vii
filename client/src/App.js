@@ -10,9 +10,6 @@ import {
   theme,
 } from '@chakra-ui/react';
 
-import AirportSelector from './components/AirportSelector';
-import DateSelector from './components/DateSelector';
-
 import ReactMapGL from 'react-map-gl';
 
 function Map() {
