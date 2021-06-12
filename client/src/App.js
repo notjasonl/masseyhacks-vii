@@ -7,35 +7,24 @@ import {
   VStack,
   Code,
   Grid,
+  useColorMode,
+  ColorModeScript,
   theme,
 } from "@chakra-ui/react";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link as RouterLink,
+} from "react-router-dom";
 
-import ReactMapGL from "react-map-gl";
-import "intersection-observer";
-import scrollama from "scrollama";
+import Landing from "./pages/Landing";
 import Map from "./pages/Map/";
-
-function TestMap() {
-  const [viewport, setViewport] = React.useState({
-    latitude: 38.907192,
-    longitude: -77.036873,
-    zoom: 11,
-  });
-
-  return (
-    <ReactMapGL
-      {...viewport}
-      mapboxApiAccessToken={
-        "pk.eyJ1Ijoicm9iZXJ0YmFvIiwiYSI6ImNrbmJ4b2EyazB3a2kyb29vdmI4NnFhdHkifQ.eWUrs0-n2fF0u1XZhNbE4w"
-      }
-      width="100%"
-      height="100%"
-      onViewportChange={(viewport) => setViewport(viewport)}
-    />
-  );
-}
+import MapApp from "./pages/MapApp";
 
 function App() {
+  const { toggleColorMode } = useColorMode();
+
   const [data, setData] = React.useState(null);
 
   React.useEffect(() => {
@@ -46,10 +35,21 @@ function App() {
 
   return (
     <ChakraProvider theme={theme}>
+      <ColorModeScript initialColorMode={"light"} />
       <Box textAlign="center" fontSize="xl">
-        <Grid minH="100vh">
-          <Map></Map>
-        </Grid>
+        <Router>
+          <Switch>
+            <Route path="/" exact>
+              <Landing />
+            </Route>
+            <Route path="/app" exact>
+              <MapApp />
+            </Route>
+            <Route path="/story" exact>
+              <Map />
+            </Route>
+          </Switch>
+        </Router>
       </Box>
     </ChakraProvider>
   );

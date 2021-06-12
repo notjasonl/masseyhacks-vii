@@ -3,15 +3,24 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@chakra-ui/react": "^1.6.3",
+    "@emotion/react": "^11.4.0",
+    "@emotion/styled": "^11.3.0",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
+    "framer-motion": "^4.1.17",
+    "fs-extra": "^9.1.0",
+    "intersection-observer": "^0.12.0",
+    "mapbox-gl": "^2.3.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-icons": "^3.0.0",
+    "react-icons": "^3.11.0",
     "react-map-gl": "^6.1.16",
-    "react-scripts": "4.0.3",
-    "web-vitals": "^1.0.1"
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "^4.0.3",
+    "scrollama": "^2.2.2",
+    "web-vitals": "^1.1.2"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -20,14 +29,12 @@
     "eject": "react-scripts eject"
   },
   "proxy": "http://localhost:4001",
-
   "eslintConfig": {
     "extends": [
       "react-app",
       "react-app/jest"
     ]
   },
-
   "browserslist": {
     "production": [
       ">0.2%",

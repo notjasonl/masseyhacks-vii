@@ -1,0 +1,15 @@
+.blurContainer {
+  height: 100%;
+  backdrop-filter: blur(8px);
+}
+
+.title {
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.description {
+  font-family: "Work Sans", sans-serif;
+}
