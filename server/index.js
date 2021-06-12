@@ -18,6 +18,7 @@ app.post("/api/mapClick", (req, res) => {
     let point = turf.point([long, lat])
     return turf.booleanContains(polygon, point)
   })
+  let bigCircle = turf.circle({lat,long},.5, {steps:10,units: 'miles'});
 
   let meters = JSON.parse(fs.readFileSync(path.join(__dirname, "../data/data/parking_meters.geojson"), "utf8"));
   let metersInCircle = []
@@ -36,15 +37,15 @@ app.post("/api/mapClick", (req, res) => {
   //     violationsintracts.push(violation)
   //   }
   // })
-  let bigCircle = turf.circle({lat,long},.5, {steps:10,units: 'miles'});
   violations.features.forEach(violation => {
     if(turf.booleanContains(bigCircle, turf.point(violation.geometry.coordinates))){
       violationsInCircle.push(violation)
       violationCircles.features.push(turf.circle(turf.point(violation.geometry.coordinates),.02,{units:'miles'}))
     }
   })
-  let metersInCircle=meters.features.filter(meter => {return turf.booleanContains(violationCircles),meter.geometry.coordinates})
-  
+
+  metersInCircle=meters.features.filter(meter => {return turf.booleanContains(violationCircles,meter.geometry.coordinates)})
+
     
   let masterMeters = {
     type: "FeatureCollection",
