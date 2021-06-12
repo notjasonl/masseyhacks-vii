@@ -29,7 +29,13 @@ app.post("/api/mapClick", (req, res) => {
   // })
   
   res.json(metersintracts)
-
+  let violations = JSON.parse(fs.readFileSync(path.join(__dirname, "../data/data/meter_violations.geojson"), "utf-8"));
+  let violationsintracts=[]
+  for (violation in violations){
+    if(turf.booleanContains(turf.polygon(tract.geometry.coordinates), violation.geometry.coordinates)){
+      violationsintracts.push(violation)
+    }
+  }
 })
 
 app.get("/api", (req, res) => {
