@@ -153,7 +153,7 @@ axios.get(march_violations_url).then((res) => {
     }
     new_master.features.forEach(violation => {
         var options = {steps: 10, units: "kilometers", properties: violation.properties}
-        var circle = turf.circle(violation.geometry.coordinates, 0.01, options)
+        var circle = turf.circle(violation.geometry.coordinates, 0.04, options)
         circled.features.push(circle)
     })
     fs.writeFileSync(path.join(output_path, "master_violations_circles.geojson"), JSON.stringify(circled))
