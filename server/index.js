@@ -20,28 +20,49 @@ app.post("/api/mapClick", (req, res) => {
   })
 
   let meters = JSON.parse(fs.readFileSync(path.join(__dirname, "../data/data/parking_meters.geojson"), "utf8"));
-  
-  let metersintracts=meters.features.filter(meter => {return meter.properties["TRACT"] == tract[0].properties["NAME"]})
-
-  let violations = JSON.parse(fs.readFileSync(path.join(__dirname, "../data/data/master_violations.geojson"), "utf-8"));
-  let violationsintracts=[]
-  violations.features.forEach(violation => {
-    if(turf.booleanContains(turf.polygon(tract[0].geometry.coordinates), turf.point(violation.geometry.coordinates))){
-      violationsintracts.push(violation)
+  let metersInCircle = []
+  meters.features.forEach(meter => {
+    if(turf.booleanContains(bigCircle, turf.point(meter.geometry.coordinates))){
+      metersInCircle.push(meter)
     }
   })
+  // let metersintract=meters.features.filter(meter => {return meter.properties["TRACT"] == tract[0].properties["NAME"]})
 
+  let violations = JSON.parse(fs.readFileSync(path.join(__dirname, "../data/data/master_violations.geojson"), "utf-8"));
+  let violationsInCircle=[]
+  let violationCircles=turf.featurecollection();
+  // violations.features.forEach(violation => {
+  //   if(turf.booleanContains(turf.polygon(tract[0].geometry.coordinates), turf.point(violation.geometry.coordinates))){
+  //     violationsintracts.push(violation)
+  //   }
+  // })
+  let bigCircle = turf.circle({lat,long},.5, {steps:10,units: 'miles'});
+  violations.features.forEach(violation => {
+    if(turf.booleanContains(bigCircle, turf.point(violation.geometry.coordinates))){
+      violationsInCircle.push(violation)
+      violationCircles.features.push(turf.circle(turf.point(violation.geometry.coordinates),.02,{units:'miles'}))
+    }
+  })
+  let metersInCircle=meters.features.filter(meter => {return turf.booleanContains(violationCircles),meter.geometry.coordinates})
+  
+    
   let masterMeters = {
     type: "FeatureCollection",
-    features: metersintracts
+    features: metersInCircle
   }
 
   let masterViolations = {
     type: "FeatureCollection",
-    features: violationsintracts
+    features: violationsInCircle
   }
 
   res.json({meters: masterMeters.features.length, violations: masterViolations.features.length})
+  //make circle around click point
+  //make circles around each violation within the click point
+  //get rid of meters in the circles around each violation
+
+  
+
 })
 
 app.get("/api", (req, res) => {
