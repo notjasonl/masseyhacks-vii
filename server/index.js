@@ -18,7 +18,7 @@ app.post("/api/mapClick", (req, res) => {
     let point = turf.point([long, lat])
     return turf.booleanContains(polygon, point)
   })
-  let bigCircle = turf.circle({lat,long},.5, {steps:10,units: 'miles'});
+  let bigCircle = turf.circle([long,lat],20, {steps:10,units: 'miles'});
 
   let meters = JSON.parse(fs.readFileSync(path.join(__dirname, "../data/data/parking_meters.geojson"), "utf8"));
   let metersInCircle = []
@@ -31,7 +31,10 @@ app.post("/api/mapClick", (req, res) => {
 
   let violations = JSON.parse(fs.readFileSync(path.join(__dirname, "../data/data/master_violations.geojson"), "utf-8"));
   let violationsInCircle=[]
-  let violationCircles=turf.featurecollection();
+  let violationCircles={
+    type: "FeatureCollection",
+    features: []
+  };
   // violations.features.forEach(violation => {
   //   if(turf.booleanContains(turf.polygon(tract[0].geometry.coordinates), turf.point(violation.geometry.coordinates))){
   //     violationsintracts.push(violation)
@@ -40,12 +43,16 @@ app.post("/api/mapClick", (req, res) => {
   violations.features.forEach(violation => {
     if(turf.booleanContains(bigCircle, turf.point(violation.geometry.coordinates))){
       violationsInCircle.push(violation)
-      violationCircles.features.push(turf.circle(turf.point(violation.geometry.coordinates),.02,{units:'miles'}))
+      violationCircles.features.push(turf.circle(turf.point(violation.geometry.coordinates),.01,{units:'miles'}))
     }
   })
 
-  metersInCircle=meters.features.filter(meter => {return turf.booleanContains(violationCircles,meter.geometry.coordinates)})
-
+  //metersInCircle=meters.features.filter(meter => {return turf.booleanContains(violationCircles,meter.geometry.coordinates)})
+  for(meter in metersInCircle){
+    for(circle in violationCircles.features){
+      metersInCircle=meters.features.filter(meter => {return !booleanContains(circle,meter.geometry.coordinates)})
+    }
+  }
     
   let masterMeters = {
     type: "FeatureCollection",
@@ -57,7 +64,7 @@ app.post("/api/mapClick", (req, res) => {
     features: violationsInCircle
   }
 
-  res.json({meters: masterMeters.features.length, violations: masterViolations.features.length})
+  res.json(metersInCircle)
   //make circle around click point
   //make circles around each violation within the click point
   //get rid of meters in the circles around each violation
