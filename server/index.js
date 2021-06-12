@@ -20,22 +20,28 @@ app.post("/api/mapClick", (req, res) => {
   })
 
   let meters = JSON.parse(fs.readFileSync(path.join(__dirname, "../data/data/parking_meters.geojson"), "utf8"));
-  // res.json({name: tract[0]})
-  let metersintracts=meters.features.filter(meter => {return meter.properties["TRACT"] == tract[0].properties["NAME"]})
-  // meters.features.forEach(meter => {
-  //   if (meter.properties["TRACT"] == tract[0].properties["NAME"]){
-  //     metersintracts.push(meter)
-  //   }
-  // })
   
-  res.json(metersintracts)
-  let violations = JSON.parse(fs.readFileSync(path.join(__dirname, "../data/data/meter_violations.geojson"), "utf-8"));
+  let metersintracts=meters.features.filter(meter => {return meter.properties["TRACT"] == tract[0].properties["NAME"]})
+
+  let violations = JSON.parse(fs.readFileSync(path.join(__dirname, "../data/data/master_violations.geojson"), "utf-8"));
   let violationsintracts=[]
-  for (violation in violations){
-    if(turf.booleanContains(turf.polygon(tract.geometry.coordinates), violation.geometry.coordinates)){
+  violations.features.forEach(violation => {
+    if(turf.booleanContains(turf.polygon(tract[0].geometry.coordinates), turf.point(violation.geometry.coordinates))){
       violationsintracts.push(violation)
     }
+  })
+
+  let masterMeters = {
+    type: "FeatureCollection",
+    features: metersintracts
   }
+
+  let masterViolations = {
+    type: "FeatureCollection",
+    features: violationsintracts
+  }
+
+  res.json({meters: masterMeters, violations: masterViolations})
 })
 
 app.get("/api", (req, res) => {
