@@ -14,9 +14,9 @@ import ReactMapGL from 'react-map-gl';
 
 function Map() {
   const [viewport, setViewport] = React.useState({
-    latitude: 37.7577,
-    longitude: -122.4376,
-    zoom: 8,
+    latitude: 38.907192,
+    longitude: -77.036873,
+    zoom: 11,
   });
 
   return (
