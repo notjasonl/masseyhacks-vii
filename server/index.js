@@ -18,19 +18,25 @@ app.post("/api/mapClick", (req, res) => {
     let point = turf.point([long, lat])
     return turf.booleanContains(polygon, point)
   })
-  let bigCircle = turf.circle([long,lat],20, {steps:10,units: 'miles'});
+  let bigCircle = turf.circle([long,lat],0.5, {steps:10,units: 'miles'});
 
   let meters = JSON.parse(fs.readFileSync(path.join(__dirname, "../data/data/parking_meters.geojson"), "utf8"));
-  let metersInCircle = []
+  let metersInCircle = {
+    type: "FeatureCollection",
+    features: []
+  };
   meters.features.forEach(meter => {
     if(turf.booleanContains(bigCircle, turf.point(meter.geometry.coordinates))){
-      metersInCircle.push(meter)
+      metersInCircle.features.push(meter)
     }
   })
   // let metersintract=meters.features.filter(meter => {return meter.properties["TRACT"] == tract[0].properties["NAME"]})
 
   let violations = JSON.parse(fs.readFileSync(path.join(__dirname, "../data/data/master_violations.geojson"), "utf-8"));
-  let violationsInCircle=[]
+  let violationsInCircle={
+    type: "FeatureCollection",
+    features: []
+  };
   let violationCircles={
     type: "FeatureCollection",
     features: []
@@ -42,17 +48,22 @@ app.post("/api/mapClick", (req, res) => {
   // })
   violations.features.forEach(violation => {
     if(turf.booleanContains(bigCircle, turf.point(violation.geometry.coordinates))){
-      violationsInCircle.push(violation)
-      violationCircles.features.push(turf.circle(turf.point(violation.geometry.coordinates),.01,{units:'miles'}))
+      violationsInCircle.features.push(violation)
+      violationCircles.features.push(turf.circle(turf.point(violation.geometry.coordinates),0.01,{steps:10,units:'miles'}))
     }
   })
-
+  //console.log(violationsInCircle)
   //metersInCircle=meters.features.filter(meter => {return turf.booleanContains(violationCircles,meter.geometry.coordinates)})
-  for(meter in metersInCircle){
-    for(circle in violationCircles.features){
-      metersInCircle=meters.features.filter(meter => {return !booleanContains(circle,meter.geometry.coordinates)})
-    }
-  }
+  metersInCircle.features.forEach(meter =>{
+    //console.log(meter)
+    violationCircles.features.forEach(circle => {
+      //console.log(circle)
+      metersInCircle=meters.features.filter(meter => {return !turf.booleanContains(turf.polygon(circle.geometry.coordinates),meter)})
+    })
+  })
+    
+  
+  
     
   let masterMeters = {
     type: "FeatureCollection",
