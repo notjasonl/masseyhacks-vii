@@ -399,9 +399,9 @@ const MapApp = () => {
           </Button>
         </Box>
 
-        <Modal isOpen={isOpen} onClose={onClose}>
+        <Modal isOpen={isOpen} onClose={onClose} background="blackAlpha.700">
           <ModalOverlay />
-          <ModalContent>
+          <ModalContent background="blackAlpha.700">
             <ModalHeader>Destination</ModalHeader>
 
             <ModalBody pb={6}>
@@ -420,6 +420,7 @@ const MapApp = () => {
               <Button
                 colorScheme="blue"
                 mr={3}
+                variant={"outline"}
                 onClick={() => {
                   onClose();
                   getCoordFromAddress(address);
