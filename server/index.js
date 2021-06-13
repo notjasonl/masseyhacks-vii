@@ -12,12 +12,7 @@ app.use(express.urlencoded({extended: true}));
 
 app.post("/api/mapClick", (req, res) => {
   let { lat, long } = req.body;
-  let tracts = JSON.parse(fs.readFileSync(path.join(__dirname, "../data/data/tracts_income.geojson"), "utf8"));
-  let tract = tracts.features.filter(tract => {
-    let polygon = turf.polygon(tract.geometry.coordinates)
-    let point = turf.point([long, lat])
-    return turf.booleanContains(polygon, point)
-  })
+
   let bigCircle = turf.circle([long,lat],0.5, {steps:10,units: 'miles'});
 
   let meters = JSON.parse(fs.readFileSync(path.join(__dirname, "../data/data/parking_meters.geojson"), "utf8"));
@@ -25,63 +20,55 @@ app.post("/api/mapClick", (req, res) => {
     type: "FeatureCollection",
     features: []
   };
+  //get all meters within 0.5 mile radius of the clicked point
   meters.features.forEach(meter => {
     if(turf.booleanContains(bigCircle, turf.point(meter.geometry.coordinates))){
       metersInCircle.features.push(meter)
     }
   })
-  // let metersintract=meters.features.filter(meter => {return meter.properties["TRACT"] == tract[0].properties["NAME"]})
 
+  //get all violations
   let violations = JSON.parse(fs.readFileSync(path.join(__dirname, "../data/data/master_violations.geojson"), "utf-8"));
   let violationsInCircle={
     type: "FeatureCollection",
     features: []
   };
+
+
   let violationCircles={
     type: "FeatureCollection",
     features: []
   };
-  // violations.features.forEach(violation => {
-  //   if(turf.booleanContains(turf.polygon(tract[0].geometry.coordinates), turf.point(violation.geometry.coordinates))){
-  //     violationsintracts.push(violation)
-  //   }
-  // })
+
+  
+  //get all violations in the wanted area
   violations.features.forEach(violation => {
     if(turf.booleanContains(bigCircle, turf.point(violation.geometry.coordinates))){
       violationsInCircle.features.push(violation)
       violationCircles.features.push(turf.circle(turf.point(violation.geometry.coordinates),0.01,{steps:10,units:'miles'}))
     }
   })
-  //console.log(violationsInCircle)
-  //metersInCircle=meters.features.filter(meter => {return turf.booleanContains(violationCircles,meter.geometry.coordinates)})
-  metersInCircle.features.forEach(meter =>{
-    //console.log(meter)
+
+  console.log(`Meters: ${metersInCircle.features.length}, Violations: ${violationCircles.features.length}`)
+
+  var final_meters = {
+    type: "FeatureCollection",
+    features: []
+  }
+
+  metersInCircle.features.forEach(meter => {
+    var collides = []
     violationCircles.features.forEach(circle => {
-      //console.log(circle)
-      metersInCircle=meters.features.filter(meter => {return !turf.booleanContains(turf.polygon(circle.geometry.coordinates),meter)})
+      collides.push(turf.booleanContains(circle, meter))
     })
+    if (!collides.includes(true)) {
+      final_meters.features.push(meter)
+    }
   })
-    
-  
-  
-    
-  let masterMeters = {
-    type: "FeatureCollection",
-    features: metersInCircle
-  }
-
-  let masterViolations = {
-    type: "FeatureCollection",
-    features: violationsInCircle
-  }
-
-  res.json(metersInCircle)
-  //make circle around click point
-  //make circles around each violation within the click point
-  //get rid of meters in the circles around each violation
-
   
 
+  res.json({"number": final_meters})
+  
 })
 
 app.get("/api", (req, res) => {
@@ -93,5 +80,3 @@ app.listen(PORT, () => {
 });
 
 //curl --data "lat=38.907192&long=-77.036873" -X POST "http://localhost:4001/api/mapClick"
-
-//make a buffer around chosen coord
