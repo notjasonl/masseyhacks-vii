@@ -315,14 +315,36 @@ const MapApp = () => {
   return (
     <div>
       <>
+        <Box
+          position={"fixed"}
+          top={"15px"}
+          left={"15px"}
+          borderRadius="lg"
+          display="flex"
+          flexDir="column"
+          alignItems="center"
+          padding="10px"
+          spacing={5}
+          background="blackAlpha.700"
+          zIndex={5}
+        >
+          <Button
+            onClick={() => {
+              onOpen();
+            }}
+            variant={"outline"}
+          >
+            New Destination
+          </Button>
+        </Box>
+
         <Modal isOpen={isOpen} onClose={onClose}>
           <ModalOverlay />
           <ModalContent>
             <ModalHeader>Destination</ModalHeader>
-            {/* <ModalCloseButton /> */}
+
             <ModalBody pb={6}>
               <FormControl>
-                <FormLabel>Address</FormLabel>
                 <Input
                   placeholder="1800 Liberty St, Windsor"
                   onChange={(e) => {
