@@ -5,6 +5,7 @@ import mapboxgl from "!mapbox-gl"; // eslint-disable-line import/no-webpack-load
 import Geocode from "react-geocode";
 
 import data from "./safe_meters";
+import violationCircles from "./violation_circles";
 
 import * as turf from "@turf/turf";
 
@@ -246,6 +247,34 @@ const MapApp = () => {
           ],
         },
       });
+
+      mapElm.addSource("violation-circles", {
+        type: "geojson",
+        generateId: true,
+        data: {
+          type: "FeatureCollection",
+          features: [
+            {
+              type: "Feature",
+              geometry: {
+                type: "Point",
+                coordinates: [0, 0], // icon position [lng, lat]
+              },
+            },
+          ],
+        },
+      });
+
+      mapElm.addLayer({
+        id: "violation-circles-layer",
+        type: "fill",
+        source: "violation-circles",
+        layout: {},
+        paint: {
+          "fill-color": "purple", // blue color fill
+          "fill-opacity": 0.5,
+        },
+      });
     });
 
     mapElm.on("click", "safe-meters-layer", function (e) {
@@ -369,6 +398,17 @@ const MapApp = () => {
       map.getSource("safe-meters").setData({
         type: "FeatureCollection",
         features: safeMeters,
+      });
+
+      let violations = violationCircles.features.filter((cir) => {
+        // console.log(point.properties.LONG);
+        return turf.booleanContains(safeRegion, cir);
+      });
+
+      // set source with new points
+      map.getSource("violation-circles").setData({
+        type: "FeatureCollection",
+        features: violations,
       });
     }
   }, [coords]);
