@@ -212,6 +212,7 @@ const MapApp = () => {
 
       mapElm.addSource("safe-meters", {
         type: "geojson",
+        generateId: true,
         data: {
           type: "FeatureCollection",
           features: [
@@ -231,19 +232,79 @@ const MapApp = () => {
         type: "circle",
         source: "safe-meters",
         paint: {
-          "circle-radius": 5,
-          "circle-color": "#66d831",
+          "circle-radius": [
+            "case",
+            ["boolean", ["feature-state", "hover"], false],
+            15,
+            5,
+          ],
+          "circle-color": [
+            "case",
+            ["boolean", ["feature-state", "hover"], false],
+            "yellow",
+            "#66d831",
+          ],
         },
       });
     });
 
     mapElm.on("click", "safe-meters-layer", function (e) {
+      console.log(e);
+      console.log(e.features[0]);
+      console.log("onclick");
       var coordinates = e.features[0].geometry.coordinates.slice();
 
       window.open(
         `https://www.google.com/maps/place/${coordinates[1]},${coordinates[0]}`,
         "_blank"
       );
+    });
+
+    var quakeID = null;
+
+    mapElm.on("mousemove", "safe-meters-layer", (e) => {
+      mapElm.getCanvas().style.cursor = "pointer";
+
+      if (e.features.length > 0) {
+        if (quakeID) {
+          mapElm.removeFeatureState({
+            source: "safe-meters",
+            id: quakeID,
+          });
+        }
+
+        quakeID = e.features[0].id;
+
+        mapElm.setFeatureState(
+          {
+            source: "safe-meters",
+            id: quakeID,
+          },
+          {
+            hover: true,
+          }
+        );
+      }
+    });
+
+    // When the mouse leaves the earthquakes-viz layer, update the
+    // feature state of the previously hovered feature
+    mapElm.on("mouseleave", "safe-meters-layer", function () {
+      if (quakeID) {
+        mapElm.setFeatureState(
+          {
+            source: "safe-meters",
+            id: quakeID,
+          },
+          {
+            hover: false,
+          }
+        );
+      }
+      quakeID = null;
+      // Remove the information from the previously hovered feature from the sidebar
+      // Reset the cursor style
+      mapElm.getCanvas().style.cursor = "";
     });
     // return () => map.remove();
   }, []);
