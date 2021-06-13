@@ -41,3 +41,4 @@ meters.features.forEach(meter => {
 })
 
 fs.writeFileSync(path.join(output_path, "safe_meters.geojson"), JSON.stringify(final_meters))
+fs.writeFileSync(path.join(output_path, "violation_circles.geojson"), JSON.stringify(violationCircles))
