@@ -19,21 +19,27 @@ const Landing = () => {
             <div className="blurContainer">
               <Center h="85%">
                 <Box className="feature">
-                  <VStack spacing={5}>
+                  <VStack
+                    maxW="700px "
+                    borderRadius="lg"
+                    display="flex"
+                    flexDir="column"
+                    alignItems="center"
+                    padding="30px"
+                    spacing={5}
+                    background="blackAlpha.700"
+                  >
                     <Text
                       className="title"
                       fontSize="7xl"
                       color="cornflowerblue"
-                      background="black"
                     >
-                      &nbsp;Park Alert&nbsp;
+                      🚧&nbsp;Park Alert&nbsp;🚧
                     </Text>
                     <Text
                       className="description"
                       fontSize="xl"
-                      maxWidth="40%"
                       color="cornflowerblue"
-                      background="black"
                       paddingY={"10px"}
                     >
                       Fines are the same for all regardless of income, hurting
@@ -45,7 +51,7 @@ const Landing = () => {
                       <Link to="/story">
                         <Button
                           className="scrollButton"
-                          variant="solid"
+                          variant="outline"
                           fontSize="xl"
                           color="cornflowerblue"
                         >
@@ -55,7 +61,7 @@ const Landing = () => {
                       <Link to="/app">
                         <Button
                           className="scrollButton"
-                          variant="solid"
+                          variant="outline"
                           fontSize="xl"
                           color="cornflowerblue"
                         >
