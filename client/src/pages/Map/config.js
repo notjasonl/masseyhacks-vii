@@ -10,45 +10,62 @@ var config = {
   footer: "",
   chapters: [
     {
-      id: "phl",
+      id: "violations-vertical-view",
       alignment: "right",
       image: "",
       description:
         "This is a map of every parking violation from the past 3 months in Washington DC. With outside travel and tourism on the rise in the aftermath of COVID, parking will become a greater challenge; both in finding a spot and avoiding fines.",
       location: {
-        center: [-77.02196, 38.89557],
-        zoom: 11.09,
+        center: [-77.05228, 38.86564 ],
+        zoom: 12.1,
         pitch: 0.0,
         bearing: 0.0,
       },
       onChapterEnter: [
         {
-          layer: "parking-meters",
-          opacity: 0.45,
+          layer: "master-violations-circles",
+          opacity: 1,
         },
       ],
       onChapterExit: [
-        {
-          layer: "phl-city-limits",
-          opacity: 0,
-        },
       ],
     },
     {
-      id: "bike-lanes",
+      id: "violations-side-view",
+      alignment: "right",
+      image: "",
+      description:
+        "As you can see, certain areas have a higher occurance of these parking violations.",
+      location: {
+        center: [-77.03173, 38.87419],
+        zoom: 12.48,
+        pitch: 60.0,
+        bearing: -31.2,
+      },
+      onChapterEnter: [
+      ],
+      onChapterExit: [
+        {
+          layer: "master-violations-circles",
+          opacity: 0,
+        },
+      ]
+    },
+    {
+      id: "census-tracts",
       alignment: "right",
       image: "",
       description:
         "DC is divided into 179 census tracts. We use these census tracts to group all the parking violations.",
       location: {
-        center: [-75.13901, 39.97085],
-        zoom: 11.62,
-        pitch: 55.5,
-        bearing: -7.2,
+        center: [ -77.05925, 38.86419],
+        zoom: 12.08,
+        pitch: 44.5,
+        bearing: -26.4,
       },
       onChapterEnter: [
         {
-          layer: "phl-bike-network",
+          layer: "tracts-income",
           opacity: 1,
         },
       ],
@@ -60,20 +77,24 @@ var config = {
       image: "",
       description: "The wealthier tracts see few violations...",
       location: {
-        center: [-75.16468, 39.94503],
-        zoom: 13.15,
-        pitch: 60.0,
-        bearing: -16.8,
+        center: [-77.09956, 38.93635 ],
+        zoom: 12.66,
+        pitch: 47.5,
+        bearing: 48.0,
       },
       onChapterEnter: [
         {
-          layer: "indego-stations",
-          opacity: 0.8,
+          layer: "tracts-income",
+          opacity: 0.2,
         },
+        {
+          layer: "weathiest-tract",
+          opacity: 1,
+        }
       ],
       onChapterExit: [
         {
-          layer: "indego-stations",
+          layer: "weathiest-tract",
           opacity: 0,
         },
       ],
@@ -84,20 +105,24 @@ var config = {
       image: "",
       description: "While the poorer tracts suffer.",
       location: {
-        center: [-75.20325, 39.99574],
-        zoom: 14.99,
-        pitch: 44.0,
-        bearing: -40.0,
+        center: [-77.02240, 38.81799 ],
+        zoom: 13.05,
+        pitch: 49.0,
+        bearing: -64.8,
       },
       onChapterEnter: [
         {
-          layer: "belmont",
+          layer: "poorest-tract",
           opacity: 1,
         },
       ],
       onChapterExit: [
         {
-          layer: "belmont",
+          layer: "poorest-tract",
+          opacity: 0,
+        },
+        {
+          layer: "tracts-income",
           opacity: 0,
         },
       ],
