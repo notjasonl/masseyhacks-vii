@@ -10,14 +10,14 @@ const output_path = path.join(__dirname, "../data")
 let max = tracts.features[0]
 let min = tracts.features[0]
 tracts.features.forEach(tract => {
-    if (tract.properties["DP03_0062E"] > max.properties["DP03_0062E"]) {
+    if (tract.properties["NAME"] != "62.02" && tract.properties["VIOLATIONS_PER_POP"] > max.properties["VIOLATIONS_PER_POP"]) {
         max = tract
     }
 
-    if (tract.properties["DP03_0062E"] < max.properties["DP03_0062E"]) {
+    if (tract.properties["NAME"] != "62.02" && tract.properties["VIOLATIONS_PER_POP"] < max.properties["VIOLATIONS_PER_POP"]) {
         min = tract
     }
 })
 
-fs.writeFileSync(path.join(output_path, "wealthiest_tract.geojson"), JSON.stringify(max))
-fs.writeFileSync(path.join(output_path, "not_wealthiest_tract.geojson"), JSON.stringify(min))
+fs.writeFileSync(path.join(output_path, "most_violation.geojson"), JSON.stringify(max))
+fs.writeFileSync(path.join(output_path, "least_violation.geojson"), JSON.stringify(min))

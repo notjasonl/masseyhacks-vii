@@ -104,6 +104,7 @@ axios.get(march_violations_url).then((res) => {
             }
         })
         tract.properties["VIOLATIONS"] = count
+        tract.properties["VIOLATIONS_PER_POP"] = count * 100 / tract.properties["DP03_0051E"]
     })
     fs.writeFileSync(path.join(output_path, "tracts_income.geojson"), JSON.stringify(tracts))
     return axios.get(meter_url)
