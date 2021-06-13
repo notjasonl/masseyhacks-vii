@@ -1,6 +1,8 @@
-import { Center, Box, Button, Text, VStack } from "@chakra-ui/react";
+import { Center, Box, Button, Text, VStack, HStack } from "@chakra-ui/react";
 // import Typewriter from "typewriter-effect";
 import "./styles.css";
+import { Link } from "react-router-dom";
+import { Typography } from "antd";
 
 const Landing = () => {
   return (
@@ -21,20 +23,46 @@ const Landing = () => {
                     <Text
                       className="title"
                       fontSize="7xl"
-                      bgGradient="linear(to-r, #3860C0, #C36DA1)"
-                      bgClip="text"
+                      color="cornflowerblue"
+                      background="black"
                     >
-                      Park Alert
+                      &nbsp;Park Alert&nbsp;
                     </Text>
-                    <Text className="description" fontSize="xl" maxWidth="40%">
+                    <Text
+                      className="description"
+                      fontSize="xl"
+                      maxWidth="40%"
+                      color="cornflowerblue"
+                      background="black"
+                      paddingY={"10px"}
+                    >
                       Fines are the same for all regardless of income, hurting
                       lower income areas. We provide a tool to find safer
                       parking areas and a visualization of the correlation
                       between parking violations and income.
                     </Text>
-                    <Button className="scrollButton" variant="ghost">
-                      asdf
-                    </Button>
+                    <HStack spacing="240px">
+                      <Link to="/story">
+                        <Button
+                          className="scrollButton"
+                          variant="solid"
+                          fontSize="xl"
+                          color="cornflowerblue"
+                        >
+                          Story
+                        </Button>
+                      </Link>
+                      <Link to="/app">
+                        <Button
+                          className="scrollButton"
+                          variant="solid"
+                          fontSize="xl"
+                          color="cornflowerblue"
+                        >
+                          Parking
+                        </Button>
+                      </Link>
+                    </HStack>
                   </VStack>
                 </Box>
               </Center>
