@@ -6,6 +6,8 @@ import Geocode from "react-geocode";
 
 import data from "./safe_meters";
 
+import * as turf from "@turf/turf";
+
 import { CircularProgress } from "@chakra-ui/react";
 
 import {
@@ -126,10 +128,11 @@ const MapApp = () => {
       zoom: zoom,
       antialias: true,
       pitch: 60,
+      interactive: false,
     });
     const markerElm = new mapboxgl.Marker();
     mapElm.on("load", () => {
-      const size = 500;
+      const size = 1000;
       const pulsingDot = {
         width: size,
         height: size,
@@ -206,16 +209,54 @@ const MapApp = () => {
           "icon-image": "pulsing-dot",
         },
       });
-      // getCoordFromAddress("12424 Horseshoe Bend Cir, Clarksburg, Maryland");
+
+      mapElm.addSource("safe-meters", {
+        type: "geojson",
+        data: {
+          type: "FeatureCollection",
+          features: [
+            {
+              type: "Feature",
+              geometry: {
+                type: "Point",
+                coordinates: [0, 0], // icon position [lng, lat]
+              },
+            },
+          ],
+        },
+      });
+
+      mapElm.addLayer({
+        id: "safe-meters-layer",
+        type: "circle",
+        source: "safe-meters",
+        paint: {
+          "circle-radius": 5,
+          "circle-color": "#66d831",
+        },
+      });
     });
 
+    mapElm.on("click", "safe-meters-layer", function (e) {
+      var coordinates = e.features[0].geometry.coordinates.slice();
+
+      window.open(
+        `https://www.google.com/maps/place/${coordinates[1]},${coordinates[0]}`,
+        "_blank"
+      );
+    });
     // return () => map.remove();
   }, []);
 
   // listen for new address coords
   useEffect(() => {
+    // check if map exists
     if (map) {
+      console.log(typeof coords.lng);
+      // update marker
       marker.setLngLat([coords.lng, coords.lat]).addTo(map);
+
+      // update radius animation marker
       map.getSource("dot-point").setData({
         type: "FeatureCollection",
         features: [
@@ -228,12 +269,45 @@ const MapApp = () => {
           },
         ],
       });
+
+      // animate view to address
       map.flyTo({
         duration: 2000,
         center: [coords.lng, coords.lat],
-        zoom: 13.05,
+        zoom: 16.05,
         pitch: 0,
         bearing: 0,
+      });
+
+      // filter out radius and render safe parking spots
+      const circleOptions = {
+        steps: 10,
+        units: "miles",
+      };
+      const safeRegion = turf.circle(
+        turf.point([coords.lng, coords.lat]),
+        0.25,
+        circleOptions
+      );
+
+      let safeMeters = data.features.filter((point) => {
+        // console.log(point.properties.LONG);
+        return (
+          point &&
+          turf.booleanPointInPolygon(
+            turf.point([
+              parseFloat(point.properties.LONGITUDE),
+              parseFloat(point.properties.LATITUDE),
+            ]),
+            safeRegion
+          )
+        );
+      });
+
+      // set source with new points
+      map.getSource("safe-meters").setData({
+        type: "FeatureCollection",
+        features: safeMeters,
       });
     }
   }, [coords]);
