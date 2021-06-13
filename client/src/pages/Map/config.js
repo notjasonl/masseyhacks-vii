@@ -32,11 +32,11 @@ var config = {
           opacity: 0,
         },
         {
-          layer: "wealthiest-tract",
+          layer: "least-violations",
           opacity: 0,
         },
         {
-          layer: "poorest-tract",
+          layer: "most-violations",
           opacity: 0,
         },
       ],
@@ -90,7 +90,8 @@ var config = {
       id: "indego",
       alignment: "right",
       image: "",
-      description: "The wealthier tracts see few violations...",
+      description:
+        "The tract with the least violations per capita is in a wealthier area.",
       location: {
         duration: 2000,
         center: [-77.09956, 38.93635],
@@ -105,13 +106,13 @@ var config = {
           opacity: 0.2,
         },
         {
-          layer: "wealthiest-tract",
+          layer: "least-violations",
           opacity: 1,
         },
       ],
       onChapterExit: [
         {
-          layer: "wealthiest-tract",
+          layer: "least-violations",
           opacity: 0,
         },
       ],
@@ -120,25 +121,26 @@ var config = {
       id: "belmont",
       alignment: "right",
       image: "",
-      description: "While the poorer tracts suffer.",
+      description:
+        "While the tract with the most violations per capita is in a less wealthy area.",
       location: {
         duration: 2000,
-        center: [-77.0224, 38.81799],
-        zoom: 13.05,
+        center: [-77.04311, 38.90164],
+        zoom: 12.55,
         pitch: 49.0,
         bearing: -64.8,
       },
 
       onChapterEnter: [
         {
-          layer: "poorest-tract",
+          layer: "most-violations",
           opacity: 1,
         },
         { layer: "tracts-income", opacity: 0 },
       ],
       onChapterExit: [
         {
-          layer: "poorest-tract",
+          layer: "most-violations",
           opacity: 0,
         },
         { layer: "tracts-income", opacity: 0 },
@@ -149,7 +151,7 @@ var config = {
       alignment: "right",
       image: "",
       description:
-        "People in lower-income communities are disproportionately likely to encounter fines and fees. Due to these systems, these families are also prone to already being in debt and to be negatively affected by a sudden financial shock. Fixed fines and fees, therefore, have a greater impact on people of lower-income tracts compared to wealthier tracts; people in lower-income communities are also more likely to see their overall fee amounts increase over time due to late fees and experience severe secondary effects such as job loss or eviction.",
+        "The data suggests that those in less wealthy areas a re more likely to encounter fines and fees. These families are prone to being in debt and the fines can be a sudden financial shock. Therefore, the fines have a greater impact on lower-income tracts compared to wealthier tracts and people in lower-income communities are also more likely to see their overall fee amounts increase, potentially causing more significant secondary effects later on.",
       location: {
         duration: 2000,
         center: [-76.996, 38.9017],
