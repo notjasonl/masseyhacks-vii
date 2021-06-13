@@ -56,6 +56,9 @@ const Map = () => {
   let map;
 
   function getLayerPaintType(layer) {
+    console.log(map.getLayer(layer));
+    console.log("H");
+    console.log(layer);
     var layerType = map.getLayer(layer).type;
     return layerTypes[layerType];
   }
